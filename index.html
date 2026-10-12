@@ -3,119 +3,444 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Affen-Abwehr — Start</title>
+    <title>Affen-Abwehr — Startmenü</title>
     <style>
-      :root{--bg:#e9f2d8;--panel:#fff8e1;--ink:#2b2a1c;--acc:#f2b705;--line:#c9b87a}
-      body{margin:0;font-family:Fredoka,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-      .wrap{max-width:1000px;margin:36px auto;padding:18px;display:grid;grid-template-columns:1fr 320px;gap:18px}
-      .card{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:14px}
-      h1{margin:0 0 8px;font-size:20px}
-      h2{margin:0 0 8px;font-size:16px}
-      .maps{display:flex;flex-direction:column;gap:8px}
-      .map{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,.06);cursor:pointer}
-      .map input{margin-right:6px}
-      .monkeys{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-      .monk{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,.06)}
-      label{display:flex;align-items:center;gap:8px}
-      .actions{display:flex;gap:8px;margin-top:12px}
-      button{background:var(--acc);border:0;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
-      .explain{font-size:14px;opacity:.9}
-      .small{font-size:13px;color:rgba(0,0,0,.6)}
-      @media(max-width:880px){.wrap{grid-template-columns:1fr}}
+      :root {
+        --bg: #e9f2d8;
+        --panel: #fff8e1;
+        --ink: #2b2a1c;
+        --acc: #f2b705;
+        --line: #c9b87a;
+        --soft: #f1ead0;
+        --shadow: rgba(43, 42, 28, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(180deg, #edf7d0 0%, var(--bg) 100%);
+        color: var(--ink);
+        font-family: Fredoka, "Segoe UI", system-ui, sans-serif;
+      }
+
+      .shell {
+        max-width: 1120px;
+        margin: 26px auto;
+        padding: 18px;
+      }
+
+      .topbar {
+        margin-bottom: 18px;
+        background: var(--panel);
+        border: 3px solid var(--line);
+        border-radius: 18px;
+        padding: 18px 20px;
+        box-shadow: 0 8px 20px var(--shadow);
+      }
+
+      .topbar h1 {
+        margin: 0;
+        font-size: clamp(1.7rem, 2.5vw, 2.5rem);
+      }
+
+      .topbar p {
+        margin: 8px 0 0;
+        opacity: 0.82;
+      }
+
+      .layout {
+        display: grid;
+        grid-template-columns: 1.3fr 0.7fr;
+        gap: 18px;
+      }
+
+      .panel {
+        background: var(--panel);
+        border: 3px solid var(--line);
+        border-radius: 18px;
+        box-shadow: 0 8px 20px var(--shadow);
+        padding: 18px;
+      }
+
+      .panel h2 {
+        margin: 0 0 12px;
+        font-size: 1.2rem;
+      }
+
+      .map-strip {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .map-card {
+        display: grid;
+        grid-template-columns: 58px 1fr auto;
+        gap: 12px;
+        align-items: center;
+        border: 2px solid rgba(43, 42, 28, 0.12);
+        border-radius: 12px;
+        background: rgba(255,255,255,0.18);
+        padding: 10px 12px;
+        cursor: pointer;
+        transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
+      }
+
+      .map-card:hover {
+        transform: translateY(-1px);
+        border-color: rgba(43,42,28,0.22);
+      }
+
+      .map-card.active {
+        border-color: var(--acc);
+        box-shadow: inset 0 0 0 2px rgba(242, 183, 5, 0.25);
+      }
+
+      .map-thumb {
+        width: 58px;
+        height: 58px;
+        border-radius: 10px;
+        position: relative;
+        background: linear-gradient(180deg, #a6d284, #6fae52);
+        overflow: hidden;
+        border: 2px solid #8bb36b;
+      }
+
+      .map-thumb:before {
+        content: "";
+        position: absolute;
+        left: 10px;
+        top: 18px;
+        width: 38px;
+        height: 18px;
+        border-radius: 18px;
+        border: 5px solid #b89355;
+        border-left-color: transparent;
+        border-bottom-color: transparent;
+        transform: rotate(14deg);
+      }
+
+      .map-thumb:after {
+        content: "";
+        position: absolute;
+        right: 8px;
+        bottom: 8px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.25);
+      }
+
+      .map-head {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+
+      .map-head strong {
+        font-size: 1rem;
+      }
+
+      .map-head small {
+        opacity: 0.75;
+      }
+
+      .map-status {
+        background: rgba(242,183,5,0.18);
+        color: #6a4d00;
+        border: 1px solid rgba(242,183,5,0.5);
+        border-radius: 999px;
+        padding: 4px 10px;
+        font-size: 0.72rem;
+        font-weight: 700;
+      }
+
+      .monkey-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 10px;
+      }
+
+      .monkey-tile {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 10px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.12);
+        border: 2px solid rgba(43,42,28,0.10);
+      }
+
+      .monkey-tile label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+      }
+
+      .monkey-tile .emoji {
+        font-size: 1.5rem;
+      }
+
+      .monkey-tile select {
+        border: 1px solid rgba(43,42,28,0.2);
+        background: white;
+        border-radius: 8px;
+        padding: 6px 8px;
+        font: inherit;
+      }
+
+      .side-box {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .summary {
+        background: rgba(255,255,255,0.16);
+        border: 2px solid rgba(43,42,28,0.1);
+        border-radius: 12px;
+        padding: 12px;
+      }
+
+      .summary strong {
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      .summary .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        opacity: 0.9;
+      }
+
+      .money-block input {
+        width: 100%;
+        border-radius: 10px;
+        border: 2px solid rgba(43,42,28,0.15);
+        padding: 9px 10px;
+        font: inherit;
+        background: rgba(255,255,255,0.7);
+      }
+
+      .button-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      button.primary,
+      button.secondary {
+        border: none;
+        border-radius: 12px;
+        padding: 11px 14px;
+        cursor: pointer;
+        font: inherit;
+        font-weight: 700;
+        transition: transform .12s ease, filter .12s ease;
+      }
+
+      button:hover { filter: brightness(0.98); }
+      button:active { transform: translateY(1px); }
+
+      button.primary {
+        background: var(--acc);
+        color: #2b2a1c;
+        flex: 1 1 180px;
+      }
+
+      button.secondary {
+        background: #f7efcc;
+        border: 2px solid var(--line);
+        color: var(--ink);
+        flex: 1 1 140px;
+      }
+
+      .help {
+        font-size: 0.92rem;
+        line-height: 1.5;
+        opacity: 0.9;
+      }
+
+      .help ul {
+        margin: 8px 0 0 18px;
+        padding: 0;
+      }
+
+      .tiny {
+        font-size: 0.77rem;
+        opacity: 0.8;
+      }
+
+      @media (max-width: 860px) {
+        .layout { grid-template-columns: 1fr; }
+        .monkey-list { grid-template-columns: 1fr; }
+      }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <div class="card">
-        <h1>Affen-Abwehr — Startseite</h1>
-        <p class="small">Wähle Karte, Start-Affen (optional) und lies die Grundlagen. Klicke dann auf "Spiel starten".</p>
-
-        <h2>Karte</h2>
-        <div class="maps" id="maps">
-          <label class="map"><input type="radio" name="map" value="map1" checked />
-            <div>
-              <strong>Map 1 — Küstenpfad</strong>
-              <div class="small">Ein einfacher Pfad: gut zum Üben.</div>
-            </div>
-          </label>
-        </div>
-
-        <h2>Start-Affen (optional)</h2>
-        <div class="monkeys" id="monkeys"></div>
-
-        <div class="actions">
-          <button id="start">Spiel starten</button>
-          <button id="start-embed">Spiel starten (im Tab)</button>
-        </div>
-
-        <h2 style="margin-top:16px">Erklärung</h2>
-        <div class="explain">
-          <p><strong>Ziel:</strong> Verhindere, dass die Ballons das Ende des Pfads erreichen.</p>
-          <p><strong>Affen:</strong> Setze Affen auf das Feld, jeder Affe hat Kosten, Reichweite und Spezialfähigkeiten. Upgrades verbessern sie.</p>
-          <p><strong>Ballons:</strong> Verschiedene Typen (rot, blau, grün, ...). Einige sind immun gegen bestimmte Angriffe (z. B. Bleiballons gegen Pfeile).</p>
-          <p class="small">Hinweis: Aktuell ist nur eine Karte verfügbar. Du kannst hier vor dem Start einige Affen auswählen — sie werden am Spielbeginn platziert.</p>
-        </div>
+    <div class="shell">
+      <div class="topbar">
+        <h1>Affen-Abwehr</h1>
+        <p>Wähle deine Karte, starte mit den gewünschten Affen und beginne dein Match.</p>
       </div>
 
-      <div class="card">
-        <h2>Vorschau / Einstellungen</h2>
-        <div id="preview" style="min-height:220px;display:flex;align-items:center;justify-content:center;">
-          <div class="small">Keine Vorschau — Karte wird im Spiel angezeigt.</div>
-        </div>
+      <div class="layout">
+        <section class="panel">
+          <h2>Map</h2>
+          <div class="map-strip">
+            <label class="map-card active">
+              <input type="radio" name="map" value="coast" checked hidden />
+              <div class="map-thumb" aria-hidden="true"></div>
+              <div class="map-head">
+                <strong>Küstenpfad</strong>
+                <small>Einfacher Startpfad für das erste Spiel</small>
+              </div>
+              <div class="map-status">Aktiv</div>
+            </label>
+          </div>
 
-        <h2 style="margin-top:12px">Start-Geld</h2>
-        <div style="display:flex;gap:8px;align-items:center">
-          <input id="startMoney" type="number" value="650" style="width:120px;padding:6px;border-radius:6px;border:1px solid rgba(0,0,0,.08)" />
-          <div class="small">Standard: 650</div>
-        </div>
+          <h2 style="margin-top: 18px;">Start-Affen</h2>
+          <div class="monkey-list">
+            <div class="monkey-tile">
+              <label><input type="checkbox" data-k="dart" /> <span class="emoji">🐵</span> Dartaffe</label>
+              <select data-lv="dart">
+                <option value="0">Kein Upgrade</option>
+                <option value="1">1 Upgrade</option>
+                <option value="2">2 Upgrades</option>
+              </select>
+            </div>
+
+            <div class="monkey-tile">
+              <label><input type="checkbox" data-k="bomb" /> <span class="emoji">🦍</span> Bombenaffe</label>
+              <select data-lv="bomb">
+                <option value="0">Kein Upgrade</option>
+                <option value="1">1 Upgrade</option>
+                <option value="2">2 Upgrades</option>
+              </select>
+            </div>
+
+            <div class="monkey-tile">
+              <label><input type="checkbox" data-k="ice" /> <span class="emoji">🐒</span> Eisaffe</label>
+              <select data-lv="ice">
+                <option value="0">Kein Upgrade</option>
+                <option value="1">1 Upgrade</option>
+                <option value="2">2 Upgrades</option>
+              </select>
+            </div>
+
+            <div class="monkey-tile">
+              <label><input type="checkbox" data-k="snip" /> <span class="emoji">🙉</span> Scharfschütze</label>
+              <select data-lv="snip">
+                <option value="0">Kein Upgrade</option>
+                <option value="1">1 Upgrade</option>
+                <option value="2">2 Upgrades</option>
+              </select>
+            </div>
+
+            <div class="monkey-tile">
+              <label><input type="checkbox" data-k="hero" /> <span class="emoji">🦧</span> Held Quincy</label>
+              <select data-lv="hero">
+                <option value="0">Startlevel</option>
+                <option value="1">Stufe +1</option>
+                <option value="2">Stufe +2</option>
+              </select>
+            </div>
+
+            <div class="monkey-tile">
+              <label><input type="checkbox" data-k="trap" /> <span class="emoji">📌</span> Stachelfalle</label>
+              <select data-lv="trap">
+                <option value="0">Standard</option>
+                <option value="1">Stärker</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel side-box">
+          <div class="summary">
+            <strong>Match-Vorschau</strong>
+            <div class="row"><span>Map</span><span id="preview-map">Küstenpfad</span></div>
+            <div class="row"><span>Start-Affen</span><span id="preview-count">0</span></div>
+          </div>
+
+          <div class="money-block">
+            <label for="startMoney"><strong>Startgeld</strong></label>
+            <input id="startMoney" type="number" value="650" min="200" max="2000" />
+          </div>
+
+          <div class="button-row">
+            <button id="startGame" class="primary">Spiel starten</button>
+            <button id="openGame" class="secondary">Neues Tab</button>
+          </div>
+
+          <div class="help">
+            <strong>So funktioniert das Spiel</strong>
+            <ul>
+              <li>Ballons wandern auf dem Pfad.</li>
+              <li>Baue Affen auf freie Felder.</li>
+              <li>Upgrade mit Geld, um stärker zu werden.</li>
+              <li>Wenn alle Ballons durchkommen, ist das Spiel verloren.</li>
+            </ul>
+          </div>
+
+          <div class="tiny">Aktuell ist nur die Küstenpfad-Map aktiv. Weitere Karten können später ergänzt werden.</div>
+        </aside>
       </div>
     </div>
 
     <script>
-      const D = {
-        dart:{n:'Dartaffe',e:'🐵',c:200},
-        bomb:{n:'Bombenaffe',e:'🦍',c:450},
-        ice:{n:'Eisaffe',e:'🐒',c:300},
-        snip:{n:'Scharfschütze',e:'🙉',c:380},
-        hero:{n:'Held Quincy',e:'🦧',c:500},
-        trap:{n:'Stachelfalle',e:'📌',c:50}
-      };
-
-      const monkeysEl = document.getElementById('monkeys');
-      Object.keys(D).forEach(k=>{
-        const d=D[k];
-        const div=document.createElement('div');div.className='monk';
-        div.innerHTML=`<label><input type="checkbox" data-k="${k}" /> <span style="font-size:20px">${d.e}</span> <strong style="margin-left:6px">${d.n}</strong></label>`;
-        // level select
-        const sel=document.createElement('select');sel.style.marginLeft='auto';sel.innerHTML='<option value="0">Keine Upgrades</option><option value="1">1. Upgrade</option><option value="2">2. Upgrades</option>';
-        div.appendChild(sel);
-        monkeysEl.appendChild(div);
+      const mapCard = document.querySelector('.map-card');
+      document.querySelectorAll('input[name="map"]').forEach(input => {
+        input.addEventListener('change', () => {
+          document.querySelectorAll('.map-card').forEach(card => card.classList.toggle('active', false));
+          input.closest('.map-card').classList.add('active');
+          document.getElementById('preview-map').textContent = 'Küstenpfad';
+        });
       });
 
-      function collectSettings(){
-        const map = document.querySelector('input[name="map"]:checked')?.value || 'map1';
-        const startMoney = parseInt(document.getElementById('startMoney').value)||650;
-        const startTowers = [];
-        document.querySelectorAll('#monkeys .monk').forEach(m=>{
-          const cb = m.querySelector('input[type=checkbox]');
-          const k = cb.dataset.k; if(!cb.checked) return;
-          const lv = parseInt(m.querySelector('select').value)||0;
-          startTowers.push({k,lv});
-        });
-        return {map,startMoney,startTowers};
+      function updatePreview() {
+        const count = [...document.querySelectorAll('[data-k]:checked')].length;
+        document.getElementById('preview-count').textContent = count;
       }
 
-      document.getElementById('start').onclick = ()=>{
-        const s = collectSettings();
-        localStorage.setItem('bloon_settings', JSON.stringify(s));
-        // open in same tab
-        location.href = './affen-abwehr.html';
+      document.querySelectorAll('[data-k]').forEach(cb => cb.addEventListener('change', updatePreview));
+      updatePreview();
+
+      function collectConfig() {
+        const cfg = {
+          map: 'coast',
+          startMoney: Number(document.getElementById('startMoney').value) || 650,
+          startTowers: []
+        };
+
+        document.querySelectorAll('[data-k]').forEach(cb => {
+          if (!cb.checked) return;
+          const k = cb.dataset.k;
+          const lv = Number(document.querySelector(`[data-lv="${k}"]`).value) || 0;
+          cfg.startTowers.push({ k, lv });
+        });
+
+        return cfg;
       }
-      document.getElementById('start-embed').onclick = ()=>{
-        const s = collectSettings();
-        localStorage.setItem('bloon_settings', JSON.stringify(s));
-        window.open('./affen-abwehr.html','_blank');
+
+      function saveAndGo(newTab = false) {
+        const cfg = collectConfig();
+        localStorage.setItem('bloon_start', JSON.stringify(cfg));
+        const target = './affen-abwehr.html';
+        if (newTab) {
+          window.open(target, '_blank');
+        } else {
+          location.href = target;
+        }
       }
+
+      document.getElementById('startGame').addEventListener('click', () => saveAndGo(false));
+      document.getElementById('openGame').addEventListener('click', () => saveAndGo(true));
     </script>
   </body>
 </html>
