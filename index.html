@@ -2,33 +2,120 @@
 <html lang="de">
   <head>
     <meta charset="utf-8" />
-    <meta http-equiv="refresh" content="0; url=./affen-abwehr.html" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Affen-Abwehr</title>
+    <title>Affen-Abwehr — Start</title>
     <style>
-      body {
-        margin: 0;
-        min-height: 100vh;
-        display: grid;
-        place-items: center;
-        background: #e9f2d8;
-        color: #2b2a1c;
-        font-family: system-ui, sans-serif;
-      }
-      .msg {
-        text-align: center;
-        padding: 24px;
-      }
-      a {
-        color: #2b2a1c;
-        font-weight: 700;
-      }
+      :root{--bg:#e9f2d8;--panel:#fff8e1;--ink:#2b2a1c;--acc:#f2b705;--line:#c9b87a}
+      body{margin:0;font-family:Fredoka,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+      .wrap{max-width:1000px;margin:36px auto;padding:18px;display:grid;grid-template-columns:1fr 320px;gap:18px}
+      .card{background:var(--panel);border:2px solid var(--line);border-radius:12px;padding:14px}
+      h1{margin:0 0 8px;font-size:20px}
+      h2{margin:0 0 8px;font-size:16px}
+      .maps{display:flex;flex-direction:column;gap:8px}
+      .map{display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,.06);cursor:pointer}
+      .map input{margin-right:6px}
+      .monkeys{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+      .monk{display:flex;align-items:center;gap:8px;padding:8px;border-radius:8px;border:1px solid rgba(0,0,0,.06)}
+      label{display:flex;align-items:center;gap:8px}
+      .actions{display:flex;gap:8px;margin-top:12px}
+      button{background:var(--acc);border:0;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:700}
+      .explain{font-size:14px;opacity:.9}
+      .small{font-size:13px;color:rgba(0,0,0,.6)}
+      @media(max-width:880px){.wrap{grid-template-columns:1fr}}
     </style>
   </head>
   <body>
-    <div class="msg">
-      <p>Spiel wird geladen…</p>
-      <p><a href="./affen-abwehr.html">Falls die Weiterleitung nicht funktioniert, hier klicken.</a></p>
+    <div class="wrap">
+      <div class="card">
+        <h1>Affen-Abwehr — Startseite</h1>
+        <p class="small">Wähle Karte, Start-Affen (optional) und lies die Grundlagen. Klicke dann auf "Spiel starten".</p>
+
+        <h2>Karte</h2>
+        <div class="maps" id="maps">
+          <label class="map"><input type="radio" name="map" value="map1" checked />
+            <div>
+              <strong>Map 1 — Küstenpfad</strong>
+              <div class="small">Ein einfacher Pfad: gut zum Üben.</div>
+            </div>
+          </label>
+        </div>
+
+        <h2>Start-Affen (optional)</h2>
+        <div class="monkeys" id="monkeys"></div>
+
+        <div class="actions">
+          <button id="start">Spiel starten</button>
+          <button id="start-embed">Spiel starten (im Tab)</button>
+        </div>
+
+        <h2 style="margin-top:16px">Erklärung</h2>
+        <div class="explain">
+          <p><strong>Ziel:</strong> Verhindere, dass die Ballons das Ende des Pfads erreichen.</p>
+          <p><strong>Affen:</strong> Setze Affen auf das Feld, jeder Affe hat Kosten, Reichweite und Spezialfähigkeiten. Upgrades verbessern sie.</p>
+          <p><strong>Ballons:</strong> Verschiedene Typen (rot, blau, grün, ...). Einige sind immun gegen bestimmte Angriffe (z. B. Bleiballons gegen Pfeile).</p>
+          <p class="small">Hinweis: Aktuell ist nur eine Karte verfügbar. Du kannst hier vor dem Start einige Affen auswählen — sie werden am Spielbeginn platziert.</p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Vorschau / Einstellungen</h2>
+        <div id="preview" style="min-height:220px;display:flex;align-items:center;justify-content:center;">
+          <div class="small">Keine Vorschau — Karte wird im Spiel angezeigt.</div>
+        </div>
+
+        <h2 style="margin-top:12px">Start-Geld</h2>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input id="startMoney" type="number" value="650" style="width:120px;padding:6px;border-radius:6px;border:1px solid rgba(0,0,0,.08)" />
+          <div class="small">Standard: 650</div>
+        </div>
+      </div>
     </div>
+
+    <script>
+      const D = {
+        dart:{n:'Dartaffe',e:'🐵',c:200},
+        bomb:{n:'Bombenaffe',e:'🦍',c:450},
+        ice:{n:'Eisaffe',e:'🐒',c:300},
+        snip:{n:'Scharfschütze',e:'🙉',c:380},
+        hero:{n:'Held Quincy',e:'🦧',c:500},
+        trap:{n:'Stachelfalle',e:'📌',c:50}
+      };
+
+      const monkeysEl = document.getElementById('monkeys');
+      Object.keys(D).forEach(k=>{
+        const d=D[k];
+        const div=document.createElement('div');div.className='monk';
+        div.innerHTML=`<label><input type="checkbox" data-k="${k}" /> <span style="font-size:20px">${d.e}</span> <strong style="margin-left:6px">${d.n}</strong></label>`;
+        // level select
+        const sel=document.createElement('select');sel.style.marginLeft='auto';sel.innerHTML='<option value="0">Keine Upgrades</option><option value="1">1. Upgrade</option><option value="2">2. Upgrades</option>';
+        div.appendChild(sel);
+        monkeysEl.appendChild(div);
+      });
+
+      function collectSettings(){
+        const map = document.querySelector('input[name="map"]:checked')?.value || 'map1';
+        const startMoney = parseInt(document.getElementById('startMoney').value)||650;
+        const startTowers = [];
+        document.querySelectorAll('#monkeys .monk').forEach(m=>{
+          const cb = m.querySelector('input[type=checkbox]');
+          const k = cb.dataset.k; if(!cb.checked) return;
+          const lv = parseInt(m.querySelector('select').value)||0;
+          startTowers.push({k,lv});
+        });
+        return {map,startMoney,startTowers};
+      }
+
+      document.getElementById('start').onclick = ()=>{
+        const s = collectSettings();
+        localStorage.setItem('bloon_settings', JSON.stringify(s));
+        // open in same tab
+        location.href = './affen-abwehr.html';
+      }
+      document.getElementById('start-embed').onclick = ()=>{
+        const s = collectSettings();
+        localStorage.setItem('bloon_settings', JSON.stringify(s));
+        window.open('./affen-abwehr.html','_blank');
+      }
+    </script>
   </body>
 </html>
