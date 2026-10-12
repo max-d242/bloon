@@ -1,446 +1,291 @@
 <!DOCTYPE html>
-<html lang="de">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Affen-Abwehr — Startmenü</title>
-    <style>
-      :root {
-        --bg: #e9f2d8;
-        --panel: #fff8e1;
-        --ink: #2b2a1c;
-        --acc: #f2b705;
-        --line: #c9b87a;
-        --soft: #f1ead0;
-        --shadow: rgba(43, 42, 28, 0.12);
-      }
+<html lang="de"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Affen-Abwehr</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#e9f2d8;--panel:#fff8e1;--ink:#2b2a1c;--acc:#f2b705;--line:#c9b87a;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17261c;--panel:#24382a;--ink:#f3efd3;--line:#4b6a52}}
+:root[data-theme="dark"]{--bg:#17261c;--panel:#24382a;--ink:#f3efd3;--line:#4b6a52}
+html{scroll-padding-top:env(safe-area-inset-top,0px);height:100%}
+body{margin:0;height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font:500 14px/1.35 Fredoka,system-ui,sans-serif}
+.scr{position:fixed;inset:0;display:none;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px calc(env(safe-area-inset-bottom,0px) + 8px);box-sizing:border-box}
+.scr.on{display:flex}
+button{font:inherit;color:var(--ink);background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:5px 8px;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.pri{background:var(--acc);border-color:var(--acc);color:#2b2a1c;font-weight:600}
+button.on{background:var(--acc);border-color:var(--acc);color:#2b2a1c}
+input{font:inherit;color:var(--ink);background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:8px;width:100%;box-sizing:border-box;margin:4px 0}
+.box{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:10px}
+#login{align-items:center;justify-content:center}
+#login .box{width:min(340px,100%);text-align:center}
+#login h1,#menu h1{margin:4px 0;font-size:26px}
+#lm{color:#c0392b;min-height:18px;margin:4px 0}
+.px{image-rendering:pixelated}
+#menu{flex-direction:column;gap:8px;overflow:auto}
+#menu .in{max-width:900px;width:100%;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.hd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.hd h1{flex:1}
+.maps{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.maps button{text-align:left;padding:10px}.maps small{display:block;opacity:.8}
+.tl{display:flex;flex-wrap:wrap;gap:6px}.tl span{border:2px solid var(--line);border-radius:999px;padding:2px 10px}.tl .lk{opacity:.5}
+.ex{columns:2 280px;gap:16px;font-size:13px}.ex p{margin:0 0 6px}
+#game{gap:8px}
+.cvw{flex:1;min-width:0;min-height:0}
+#c{width:100%;height:100%;object-fit:contain;display:block;border-radius:12px;background:#222}
+.side{width:236px;display:flex;flex-direction:column;gap:5px;min-height:0}
+.row{display:flex;gap:5px}.row button{flex:1}
+.shop{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.shop button{display:flex;flex-direction:column;align-items:center;padding:3px 2px;font-size:12px;line-height:1.15}
+.shop i{font-style:normal;font-size:20px;height:24px;display:flex;align-items:center}
+#pan{padding:6px;font-size:13px}#pan h3{margin:0 0 3px;font-size:14px}
+#pan button{width:100%;margin-top:3px;display:flex;justify-content:space-between;font-size:12px;padding:4px 7px}
+#tip{font-size:12px;opacity:.85;min-height:30px}
+@media(max-aspect-ratio:1/1){#game{flex-direction:column}.side{width:auto;flex:0 0 auto}.shop{grid-template-columns:repeat(5,1fr)}}
+#md{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(10,20,14,.8);z-index:9;padding:12px}
+#md .box{max-width:560px;width:100%;text-align:center}
+.cards{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:8px}
+.cards button{flex:1 1 140px;padding:10px}.cards small{display:block;opacity:.85}
+</style></head>
+<body>
+<div class="scr" id="menu"><div class="in">
+ <div class="hd"><h1>🐵 Affen-Abwehr</h1><span id="st"></span><button id="lo">Admin</button></div>
+ <button class="pri" id="cont" style="padding:10px"></button>
+ <div class="box"><b>Neues Spiel – Karte wählen</b><div class="maps" id="maps" style="margin-top:6px"></div></div>
+ <div class="box"><b>Affen</b> (Siege schalten neue frei)<div class="tl" id="tl" style="margin-top:6px"></div></div>
+ <div class="box ex">
+  <p><b>Ziel:</b> Platziere Affen, den Helden und Fallen am Weg. Platze alle Bloons, bevor sie das Ende erreichen. Jeder Durchbruch kostet Leben. Überstehst du 40 Runden, gewinnst du.</p>
+  <p><b>Steuerung:</b> Affen im Shop antippen, dann aufs Feld tippen. Platzierten Affen antippen: 3 Upgrades oder verkaufen. Esc oder Rechtsklick bricht ab. Mit Tempo schaltest du ×1 bis ×4, mit Auto starten die Runden von selbst. Der Pfeilsturm des Helden trifft alle Bloons (alle 40 s).</p>
+  <p><b>Bloons:</b> Rot, Blau, Grün, Gelb, Pink werden schneller. Blei ist immun gegen Pfeile und Stacheln. Militär-Tarnung sieht nur ein Affe mit Tarnsicht. Zeppeline (MOAB) halten viel aus und setzen Bloons frei.</p>
+  <p><b>Roguelike:</b> Vor jedem Spiel und alle 10 Runden wählst du 1 von 3 Perks. Siege schalten neue Affen und Karten frei. Dein Fortschritt wird automatisch gespeichert.</p>
+ </div>
+</div></div>
 
-      * { box-sizing: border-box; }
+<div class="scr" id="game">
+ <div class="cvw"><canvas id="c" width="800" height="500"></canvas></div>
+ <div class="side">
+  <div class="row"><button class="pri" id="go" style="flex:2"></button><button id="au">Auto</button><button id="sp">×1</button></div>
+  <div class="shop" id="shop"></div>
+  <div class="box" id="pan"></div>
+  <div id="tip"></div>
+  <div class="row"><button id="ab">Pfeilsturm</button><button id="mn">Menü</button></div>
+ </div>
+</div>
+<div id="md"><div class="box" id="mb"></div></div>
 
-      body {
-        margin: 0;
-        min-height: 100vh;
-        background: linear-gradient(180deg, #edf7d0 0%, var(--bg) 100%);
-        color: var(--ink);
-        font-family: Fredoka, "Segoe UI", system-ui, sans-serif;
-      }
-
-      .shell {
-        max-width: 1120px;
-        margin: 26px auto;
-        padding: 18px;
-      }
-
-      .topbar {
-        margin-bottom: 18px;
-        background: var(--panel);
-        border: 3px solid var(--line);
-        border-radius: 18px;
-        padding: 18px 20px;
-        box-shadow: 0 8px 20px var(--shadow);
-      }
-
-      .topbar h1 {
-        margin: 0;
-        font-size: clamp(1.7rem, 2.5vw, 2.5rem);
-      }
-
-      .topbar p {
-        margin: 8px 0 0;
-        opacity: 0.82;
-      }
-
-      .layout {
-        display: grid;
-        grid-template-columns: 1.3fr 0.7fr;
-        gap: 18px;
-      }
-
-      .panel {
-        background: var(--panel);
-        border: 3px solid var(--line);
-        border-radius: 18px;
-        box-shadow: 0 8px 20px var(--shadow);
-        padding: 18px;
-      }
-
-      .panel h2 {
-        margin: 0 0 12px;
-        font-size: 1.2rem;
-      }
-
-      .map-strip {
-        display: grid;
-        grid-template-columns: 1fr;
-        gap: 10px;
-      }
-
-      .map-card {
-        display: grid;
-        grid-template-columns: 58px 1fr auto;
-        gap: 12px;
-        align-items: center;
-        border: 2px solid rgba(43, 42, 28, 0.12);
-        border-radius: 12px;
-        background: rgba(255,255,255,0.18);
-        padding: 10px 12px;
-        cursor: pointer;
-        transition: transform .12s ease, border-color .12s ease, box-shadow .12s ease;
-      }
-
-      .map-card:hover {
-        transform: translateY(-1px);
-        border-color: rgba(43,42,28,0.22);
-      }
-
-      .map-card.active {
-        border-color: var(--acc);
-        box-shadow: inset 0 0 0 2px rgba(242, 183, 5, 0.25);
-      }
-
-      .map-thumb {
-        width: 58px;
-        height: 58px;
-        border-radius: 10px;
-        position: relative;
-        background: linear-gradient(180deg, #a6d284, #6fae52);
-        overflow: hidden;
-        border: 2px solid #8bb36b;
-      }
-
-      .map-thumb:before {
-        content: "";
-        position: absolute;
-        left: 10px;
-        top: 18px;
-        width: 38px;
-        height: 18px;
-        border-radius: 18px;
-        border: 5px solid #b89355;
-        border-left-color: transparent;
-        border-bottom-color: transparent;
-        transform: rotate(14deg);
-      }
-
-      .map-thumb:after {
-        content: "";
-        position: absolute;
-        right: 8px;
-        bottom: 8px;
-        width: 16px;
-        height: 16px;
-        border-radius: 50%;
-        background: rgba(255,255,255,0.25);
-      }
-
-      .map-head {
-        display: flex;
-        flex-direction: column;
-        gap: 2px;
-      }
-
-      .map-head strong {
-        font-size: 1rem;
-      }
-
-      .map-head small {
-        opacity: 0.75;
-      }
-
-      .map-status {
-        background: rgba(242,183,5,0.18);
-        color: #6a4d00;
-        border: 1px solid rgba(242,183,5,0.5);
-        border-radius: 999px;
-        padding: 4px 10px;
-        font-size: 0.72rem;
-        font-weight: 700;
-      }
-
-      .monkey-list {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(150px, 1fr));
-        gap: 10px;
-        margin-top: 10px;
-      }
-
-      .monkey-tile {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        padding: 12px 10px;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.12);
-        border: 2px solid rgba(43,42,28,0.10);
-      }
-
-      .monkey-tile label {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        font-weight: 600;
-      }
-
-      .monkey-tile .emoji {
-        font-size: 1.5rem;
-      }
-
-      .monkey-tile select {
-        border: 1px solid rgba(43,42,28,0.2);
-        background: white;
-        border-radius: 8px;
-        padding: 6px 8px;
-        font: inherit;
-      }
-
-      .side-box {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-      }
-
-      .summary {
-        background: rgba(255,255,255,0.16);
-        border: 2px solid rgba(43,42,28,0.1);
-        border-radius: 12px;
-        padding: 12px;
-      }
-
-      .summary strong {
-        display: block;
-        margin-bottom: 6px;
-      }
-
-      .summary .row {
-        display: flex;
-        justify-content: space-between;
-        gap: 8px;
-        opacity: 0.9;
-      }
-
-      .money-block input {
-        width: 100%;
-        border-radius: 10px;
-        border: 2px solid rgba(43,42,28,0.15);
-        padding: 9px 10px;
-        font: inherit;
-        background: rgba(255,255,255,0.7);
-      }
-
-      .button-row {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      button.primary,
-      button.secondary {
-        border: none;
-        border-radius: 12px;
-        padding: 11px 14px;
-        cursor: pointer;
-        font: inherit;
-        font-weight: 700;
-        transition: transform .12s ease, filter .12s ease;
-      }
-
-      button:hover { filter: brightness(0.98); }
-      button:active { transform: translateY(1px); }
-
-      button.primary {
-        background: var(--acc);
-        color: #2b2a1c;
-        flex: 1 1 180px;
-      }
-
-      button.secondary {
-        background: #f7efcc;
-        border: 2px solid var(--line);
-        color: var(--ink);
-        flex: 1 1 140px;
-      }
-
-      .help {
-        font-size: 0.92rem;
-        line-height: 1.5;
-        opacity: 0.9;
-      }
-
-      .help ul {
-        margin: 8px 0 0 18px;
-        padding: 0;
-      }
-
-      .tiny {
-        font-size: 0.77rem;
-        opacity: 0.8;
-      }
-
-      @media (max-width: 860px) {
-        .layout { grid-template-columns: 1fr; }
-        .monkey-list { grid-template-columns: 1fr; }
-      }
-    </style>
-  </head>
-  <body>
-    <div class="shell">
-      <div class="topbar">
-        <h1>Affen-Abwehr</h1>
-        <p>Wähle deine Karte, starte mit den gewünschten Affen und beginne dein Match.</p>
-      </div>
-
-      <div class="layout">
-        <section class="panel">
-          <h2>Map</h2>
-          <div class="map-strip">
-            <label class="map-card active">
-              <input type="radio" name="map" value="coast" checked hidden />
-              <div class="map-thumb" aria-hidden="true"></div>
-              <div class="map-head">
-                <strong>Küstenpfad</strong>
-                <small>Einfacher Startpfad für das erste Spiel</small>
-              </div>
-              <div class="map-status">Aktiv</div>
-            </label>
-          </div>
-
-          <h2 style="margin-top: 18px;">Start-Affen</h2>
-          <div class="monkey-list">
-            <div class="monkey-tile">
-              <label><input type="checkbox" data-k="dart" /> <span class="emoji">🐵</span> Dartaffe</label>
-              <select data-lv="dart">
-                <option value="0">Kein Upgrade</option>
-                <option value="1">1 Upgrade</option>
-                <option value="2">2 Upgrades</option>
-              </select>
-            </div>
-
-            <div class="monkey-tile">
-              <label><input type="checkbox" data-k="bomb" /> <span class="emoji">🦍</span> Bombenaffe</label>
-              <select data-lv="bomb">
-                <option value="0">Kein Upgrade</option>
-                <option value="1">1 Upgrade</option>
-                <option value="2">2 Upgrades</option>
-              </select>
-            </div>
-
-            <div class="monkey-tile">
-              <label><input type="checkbox" data-k="ice" /> <span class="emoji">🐒</span> Eisaffe</label>
-              <select data-lv="ice">
-                <option value="0">Kein Upgrade</option>
-                <option value="1">1 Upgrade</option>
-                <option value="2">2 Upgrades</option>
-              </select>
-            </div>
-
-            <div class="monkey-tile">
-              <label><input type="checkbox" data-k="snip" /> <span class="emoji">🙉</span> Scharfschütze</label>
-              <select data-lv="snip">
-                <option value="0">Kein Upgrade</option>
-                <option value="1">1 Upgrade</option>
-                <option value="2">2 Upgrades</option>
-              </select>
-            </div>
-
-            <div class="monkey-tile">
-              <label><input type="checkbox" data-k="hero" /> <span class="emoji">🦧</span> Held Quincy</label>
-              <select data-lv="hero">
-                <option value="0">Startlevel</option>
-                <option value="1">Stufe +1</option>
-                <option value="2">Stufe +2</option>
-              </select>
-            </div>
-
-            <div class="monkey-tile">
-              <label><input type="checkbox" data-k="trap" /> <span class="emoji">📌</span> Stachelfalle</label>
-              <select data-lv="trap">
-                <option value="0">Standard</option>
-                <option value="1">Stärker</option>
-              </select>
-            </div>
-          </div>
-        </section>
-
-        <aside class="panel side-box">
-          <div class="summary">
-            <strong>Match-Vorschau</strong>
-            <div class="row"><span>Map</span><span id="preview-map">Küstenpfad</span></div>
-            <div class="row"><span>Start-Affen</span><span id="preview-count">0</span></div>
-          </div>
-
-          <div class="money-block">
-            <label for="startMoney"><strong>Startgeld</strong></label>
-            <input id="startMoney" type="number" value="650" min="200" max="2000" />
-          </div>
-
-          <div class="button-row">
-            <button id="startGame" class="primary">Spiel starten</button>
-            <button id="openGame" class="secondary">Neues Tab</button>
-          </div>
-
-          <div class="help">
-            <strong>So funktioniert das Spiel</strong>
-            <ul>
-              <li>Ballons wandern auf dem Pfad.</li>
-              <li>Baue Affen auf freie Felder.</li>
-              <li>Upgrade mit Geld, um stärker zu werden.</li>
-              <li>Wenn alle Ballons durchkommen, ist das Spiel verloren.</li>
-            </ul>
-          </div>
-
-          <div class="tiny">Aktuell ist nur die Küstenpfad-Map aktiv. Weitere Karten können später ergänzt werden.</div>
-        </aside>
-      </div>
-    </div>
-
-    <script>
-      const mapCard = document.querySelector('.map-card');
-      document.querySelectorAll('input[name="map"]').forEach(input => {
-        input.addEventListener('change', () => {
-          document.querySelectorAll('.map-card').forEach(card => card.classList.toggle('active', false));
-          input.closest('.map-card').classList.add('active');
-          document.getElementById('preview-map').textContent = 'Küstenpfad';
-        });
-      });
-
-      function updatePreview() {
-        const count = [...document.querySelectorAll('[data-k]:checked')].length;
-        document.getElementById('preview-count').textContent = count;
-      }
-
-      document.querySelectorAll('[data-k]').forEach(cb => cb.addEventListener('change', updatePreview));
-      updatePreview();
-
-      function collectConfig() {
-        const cfg = {
-          map: 'coast',
-          startMoney: Number(document.getElementById('startMoney').value) || 650,
-          startTowers: []
-        };
-
-        document.querySelectorAll('[data-k]').forEach(cb => {
-          if (!cb.checked) return;
-          const k = cb.dataset.k;
-          const lv = Number(document.querySelector(`[data-lv="${k}"]`).value) || 0;
-          cfg.startTowers.push({ k, lv });
-        });
-
-        return cfg;
-      }
-
-      function saveAndGo(newTab = false) {
-        const cfg = collectConfig();
-        localStorage.setItem('bloon_start', JSON.stringify(cfg));
-        const target = './affen-abwehr.html';
-        if (newTab) {
-          window.open(target, '_blank');
-        } else {
-          location.href = target;
-        }
-      }
-
-      document.getElementById('startGame').addEventListener('click', () => saveAndGo(false));
-      document.getElementById('openGame').addEventListener('click', () => saveAndGo(true));
-    </script>
-  </body>
-</html>
+<script>
+const $=i=>document.getElementById(i),cv=$('c'),x=cv.getContext('2d');
+const USER='Max',PASS='Susik1',KEY='affenTD_'+USER,WIN=40;
+let S={wins:0,runs:0,best:0,run:null,auto:0,a:{}};
+const load=()=>{try{Object.assign(S,JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){}S.a=Object.assign({money:0,lives:0,unlock:0,ab:0},S.a)};
+const locked=u=>!S.a.unlock&&S.wins<u;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const show=id=>document.querySelectorAll('.scr').forEach(s=>s.classList.toggle('on',s.id==id));
+// ---- Pixel-Grafik (Stil und Palette der Vorlage)
+const mkc=(w,h)=>{const c=document.createElement('canvas');c.width=w;c.height=h;return c};
+const MB=["...BBBBBB...","..BbbbbbbB..",".BbbbbbbbbB.","BBbSSSSSSbBB","BSbSKSSKSbSB","BSbSSSSSSbSB",".BbSSKKSSbB.",".BbbSSSSbbB.","..BbbbbbbB..","...BBBBBB...","..TTTTTTTT..",".bTTTTTTTTb."];
+const MC={B:'#6b3f1c',b:'#a8672c',S:'#e8c99a',K:'#161616'};
+const MK={
+ dart:{t:'#c84c2a',r:[[2,2,8,1,'#c84c2a']]},
+ boom:{t:'#e08a2a',r:[[2,2,8,1,'#f0b030'],[9,9,3,1,'#f0b030']]},
+ bomb:{t:'#555555',r:[[3,0,6,2,'#2a2a2a']],u:[[11,9,5,3,'#222222']]},
+ ice:{t:'#3b8be2',r:[[2,0,8,3,'#77ccdd'],[5,0,2,1,'#ffffff']]},
+ snip:{t:'#3a5a2a',r:[[2,0,8,3,'#3a5a2a'],[8,9,4,1,'#222222']]},
+ heli:{t:'#c0392b',r:[[2,3,8,1,'#d4c93a']],u:[[1,10,14,3,'#c0392b'],[0,11,3,1,'#c0392b']]},
+ sup:{t:'#2b34b8',r:[[2,3,8,1,'#2b34b8']],u:[[0,10,16,4,'#c84c2a'],[1,9,14,2,'#c84c2a']]},
+ hero:{t:'#2b34b8',r:[[3,0,6,2,'#d4c93a'],[3,-1,1,1,'#d4c93a'],[8,-1,1,1,'#d4c93a'],[5,-1,2,1,'#d4c93a']],u:[[0,10,16,4,'#c84c2a']]}};
+const SPM={},SPB={};let BL;
+function monkeySprite(k){const c=mkc(16,14),g=c.getContext('2d'),o=MK[k];
+ (o.u||[]).forEach(r=>{g.fillStyle=r[4];g.fillRect(r[0],r[1],r[2],r[3])});
+ MB.forEach((row,j)=>[...row].forEach((ch,i)=>{const col=ch=='T'?o.t:MC[ch];if(col){g.fillStyle=col;g.fillRect(i+2,j+1,1,1)}}));
+ (o.r||[]).forEach(r=>{g.fillStyle=r[4];g.fillRect(r[0]+2,r[1]+1,r[2],r[3])});return c}
+function shade(h,f){const n=parseInt(h.slice(1),16),m=v=>Math.max(0,Math.min(255,Math.round(f<0?v*(1+f):v+(255-v)*f)));return'rgb('+m(n>>16)+','+m(n>>8&255)+','+m(n&255)+')'}
+const BB=["...OOOO...","..OchhccO.",".OchhcccdO",".OchccccdO",".OcccccddO",".OcccccddO",".OccccdddO","..OccdddO.","...OdddO..","....OOO...","....OcO...",".....O....","....w.....",".....w....","....w....."];
+function bloonSprite(c,camo,lead){const c0=mkc(10,15),g=c0.getContext('2d'),cc=['#5a6a35','#2f3a1f','#8a8a55','#3d4a28'];
+ BB.forEach((row,j)=>[...row].forEach((ch,i)=>{let col=null;
+  if(ch=='O')col=lead?'#2a2a30':shade(c,-.55);
+  else if(ch=='c')col=camo?cc[(i*7+j*3+(i>4?1:0))%4]:c;
+  else if(ch=='h')col=camo?'#a3a36a':shade(c,.55);
+  else if(ch=='d')col=camo?'#26301a':shade(c,-.3);
+  else if(ch=='w')col='#dddddd';
+  if(col){g.fillStyle=col;g.fillRect(i,j,1,1)}}));
+ if(camo){g.fillStyle='#e8e2a0';g.fillRect(4,5,2,1);g.fillRect(5,4,1,3)}return c0}
+function blimpSprite(){const c=mkc(32,16),g=c.getContext('2d');
+ g.fillStyle='#1d4e99';g.fillRect(1,1,4,5);g.fillRect(1,10,4,5);
+ for(let j=0;j<16;j++)for(let i=0;i<32;i++){const dx=(i-16)/14,dy=(j-7.5)/6.6,r=dx*dx+dy*dy;if(r>1)continue;
+  let col=r>.78?'#12295a':j<4?'#8bbcff':j<8?'#2f6fc4':'#1d4e99';
+  if(r<=.78&&(i%7==3||i%7==4)&&i>6&&i<27)col=j<8?'#e23b3b':'#a62a2a';
+  g.fillStyle=col;g.fillRect(i,j,1,1)}
+ g.fillStyle='#333333';g.fillRect(12,13,8,3);g.fillStyle='#bbddee';g.fillRect(14,14,2,1);g.fillRect(17,14,2,1);return c}
+function balloon(c,camo,lead){const k=c+camo+lead,s=SPB[k]||(SPB[k]=bloonSprite(c,camo,lead));x.imageSmoothingEnabled=false;x.drawImage(s,-10,-11,20,30)}
+function blimp(b){BL=BL||blimpSprite();x.imageSmoothingEnabled=false;x.drawImage(BL,-32,-17,64,32);
+ x.fillStyle='#222';x.fillRect(-22,-30,44,5);x.fillStyle='#5f5';x.fillRect(-22,-30,44*b.hp/60,5)}
+function monkey(k,px,py){x.save();x.translate(px,py);x.fillStyle='rgba(0,0,0,.25)';x.beginPath();x.ellipse(0,15,15,5,0,0,7);x.fill();
+ const s=SPM[k]||(SPM[k]=monkeySprite(k)),z=k=='hero'?2.5:2;x.imageSmoothingEnabled=false;x.drawImage(s,-8*z,-7*z,16*z,14*z);
+ if(k=='heli'){const a=Math.abs(Math.cos(frame*.35))*30+3;x.fillStyle='#222';x.fillRect(-a,-22,2*a,3);x.fillRect(-1,-19,3,5)}
+ x.restore()}
+// ---- Karten
+const M=[
+ {n:'Dschungelpfad',need:0,bg:'#6fae52',pa:'#e8d595',pb:'#b89c55',r:[[400,140,24],[80,120,22],[720,230,24],[420,380,26],[100,440,24]],p:[[-20,80],[620,80],[620,200],[140,200],[140,320],[660,320],[660,440],[300,440],[300,520]]},
+ {n:'Vulkan-Schlucht',need:0,bg:'#7a4a3a',pa:'#5b4a46',pb:'#2e2420',r:[[100,250,22],[300,250,24],[500,250,24],[700,250,22],[720,420,24]],p:[[-20,420],[200,420],[200,100],[400,100],[400,400],[600,400],[600,100],[820,100]]},
+ {n:'Eisfluss',need:1,bg:'#bfe3f0',pa:'#6aa9d6',pb:'#3b78a8',r:[[60,130,22],[225,250,22],[375,250,24],[525,250,24],[760,120,22],[60,400,22]],p:[[-20,250],[150,250],[150,80],[300,80],[300,420],[450,420],[450,80],[600,80],[600,420],[700,420],[700,250],[820,250]]}];
+let mi=0,P,seg,L,ROCKS;
+function setMap(i){mi=i;P=M[i].p;ROCKS=M[i].r;seg=[];L=0;for(let k=0;k<P.length-1;k++){const a=P[k],b=P[k+1],l=Math.hypot(b[0]-a[0],b[1]-a[1]);seg.push({a,b,l,s:L});L+=l}}
+function at(d){for(const g of seg)if(d<=g.s+g.l){const t=(d-g.s)/g.l;return[g.a[0]+(g.b[0]-g.a[0])*t,g.a[1]+(g.b[1]-g.a[1])*t]}return P[P.length-1]}
+function pd(px,py){let m=1e9;for(const g of seg){const dx=g.b[0]-g.a[0],dy=g.b[1]-g.a[1],t=Math.max(0,Math.min(1,((px-g.a[0])*dx+(py-g.a[1])*dy)/(g.l*g.l)));m=Math.min(m,Math.hypot(px-g.a[0]-dx*t,py-g.a[1]-dy*t))}return m}
+// ---- Bloons
+const T={red:{c:'#e23b3b',s:1.1,k:[]},blue:{c:'#3b8be2',s:1.4,k:['red']},green:{c:'#3dbb4a',s:1.8,k:['blue']},yellow:{c:'#f0cf2a',s:2.5,k:['green']},pink:{c:'#f57bb5',s:2.9,k:['yellow']},lead:{c:'#8b909c',s:1,k:['green','green'],lead:1},moab:{c:'#2f6fc4',s:.8,k:['pink','pink','pink','pink'],hp:60}};
+const rank=t=>T[t].k.reduce((a,k)=>a+rank(k),1);
+// ---- Affen (u = nötige Siege)
+const D={
+ dart:{n:'Dartaffe',i:'🐵',d:'Schnelle Pfeile.',u:0,c:200,r:95,rate:42,dmg:1,kind:'sharp',shots:1,up:[['Turbo-Pfeile',140,t=>t.rate*=.6],['Adlerauge (Tarnsicht)',220,t=>{t.r+=30;t.camo=1}],['Dreifach-Pfeile',380,t=>{t.shots=3;t.dmg=2}]]},
+ boom:{n:'Bumerangaffe',i:'🪃',d:'Trifft 2 Ziele.',u:0,c:330,r:100,rate:55,dmg:1,kind:'sharp',shots:2,up:[['Schärfere Klinge',200,t=>t.dmg=2],['Weiter Wurf',280,t=>{t.r+=30;t.shots=3}],['Glaive-Sturm',650,t=>{t.rate*=.5;t.dmg=3}]]},
+ bomb:{n:'Bombenaffe',i:'💣',d:'Flächenschaden, sprengt Blei.',u:0,c:450,r:105,rate:95,dmg:1,kind:'boom',splash:42,up:[['Größere Bomben',250,t=>t.splash+=22],['Schnellzünder',350,t=>t.rate*=.6],['Mega-Bombe',700,t=>{t.dmg=3;t.splash+=15}]]},
+ ice:{n:'Eisaffe',i:'❄️',d:'Bremst alle Bloons in Reichweite.',u:0,c:300,r:75,rate:70,dmg:0,kind:'frost',up:[['Eiskristalle',200,t=>t.dmg=1],['Weite Kälte (Tarnsicht)',250,t=>{t.r+=30;t.camo=1}],['Permafrost',500,t=>{t.rate*=.6;t.dmg=2}]]},
+ snip:{n:'Scharfschütze',i:'🎯',d:'Unendliche Reichweite. Ab 1 Sieg.',u:1,c:380,r:9999,rate:110,dmg:2,kind:'sharp',shots:1,up:[['Repetierer',250,t=>t.rate*=.55],['Hohlspitze',400,t=>t.dmg=5],['Wärmebild (Tarnsicht)',600,t=>{t.camo=1;t.dmg=9}]]},
+ heli:{n:'Helikopteraffe',i:'🚁',d:'Schnell, sieht Tarnung. Ab 3 Siegen.',u:3,c:900,r:125,rate:14,dmg:1,kind:'sharp',shots:1,camo:1,up:[['Rotorblätter',500,t=>t.rate*=.7],['Raketen',900,t=>t.dmg=3],['Apache',2000,t=>{t.rate*=.5;t.dmg=5}]]},
+ sup:{n:'Superaffe',i:'🦸',d:'Mächtigster Affe. Ab 10 Siegen.',u:10,c:2500,r:130,rate:6,dmg:2,kind:'sharp',shots:2,camo:1,up:[['Laseraugen',1500,t=>t.dmg=4],['Sonnenkraft',3000,t=>t.rate*=.6],['Götterflug',6000,t=>{t.shots=4;t.dmg=7}]]},
+ hero:{n:'Held Max',i:'👑',d:'Eigener Pixel-Held. Levelt automatisch bis 20.',u:0,c:500,r:115,rate:30,dmg:1,kind:'sharp',shots:3,camo:1,up:[]},
+ trap:{n:'Stachelfalle',i:'📌',d:'Pflückt 14 Bloons vom Weg.',u:0,c:50}};
+// ---- Zustand
+let B,TW,TR,FX,q,money,lives,round,frame,running,over,won,paused,inGame,spd=1,pl=null,sel=null,mx=-99,my=-99,abCd=0,autoT=0,G;
+const costOf=k=>Math.round(D[k].c*G.disc/5)*5;
+const heroLv=()=>Math.min(20,1+Math.floor(round/2)+G.hlv);
+function reset(){B=[];TW=[];TR=[];FX=[];q=[];money=650;lives=100;round=1;frame=0;running=over=won=paused=false;sel=pl=null;abCd=0;G={dmg:0,rate:1,disc:1,bonus:1,hlv:0};$('md').style.display='none'}
+function mk(k,px,py,lv,spent){const d=D[k],t={k,x:px,y:py,cd:0,lv:0,spent:spent||d.c,r:d.r,rate:d.rate,dmg:d.dmg,kind:d.kind,shots:d.shots||1,splash:d.splash||0,camo:d.camo||0};
+ for(let i=0;i<lv&&d.up[i];i++)d.up[i][2](t);t.lv=lv;return t}
+function spawn(t,d,camo){const p=at(d);B.push({t,d,camo:!!camo,hp:T[t].hp||1,lead:!!T[t].lead,slow:0,x:p[0],y:p[1]})}
+function hit(b,dmg,kind){
+ if(b.dead||(b.lead&&kind=='sharp'))return false;
+ if(b.hp>1){b.hp-=dmg;money++;if(b.hp>0)return true;money+=20;dmg=1}
+ let t=b.t,n=dmg;
+ while(n>0){money++;const k=T[t].k;n--;
+  if(!k.length){b.dead=1;return true}
+  if(k.length>1||n==0){b.dead=1;k.forEach((c,i)=>spawn(c,b.d-i*5,b.camo));return true}
+  t=k[0]}
+ return true}
+function plan(n){const g=[],add=(ty,c,gap,camo)=>{c=Math.floor(c);if(c>0)g.push({ty,c,gap,camo})};
+ if(n<9)add('red',6+n*2,22);if(n>=2&&n<16)add('blue',3+n,24);if(n>=5)add('green',n-2,22);
+ if(n>=9)add('yellow',(n-6)*.8,20);if(n>=14)add('pink',(n-12)*.9,18);if(n>=12)add('lead',(n-10)/2,40);
+ if(n>=8)add('green',n/2,26,1);if(n>=18)add('yellow',(n-16)/2,24,1);if(n%10==0)add('moab',n/10,120);return g}
+function startRound(){if(running||over||paused)return;running=true;
+ plan(round).forEach((g,gi)=>{for(let i=0;i<g.c;i++)q.push({t:frame+10+gi*7+i*g.gap,ty:g.ty,camo:g.camo})});
+ q.sort((a,b)=>a.t-b.t)}
+function tick(){
+ frame++;abCd>0&&abCd--;if(S.a.ab)abCd=0;if(S.a.money)money=Math.max(money,999999);if(S.a.lives)lives=Math.max(lives,999);if(!running&&!over&&S.auto&&++autoT>45){autoT=0;startRound()}
+ while(q.length&&q[0].t<=frame){const s=q.shift();spawn(s.ty,0,s.camo)}
+ for(const b of B){if(b.dead)continue;b.d+=T[b.t].s*(b.slow>0?.5:1);b.slow>0&&b.slow--;const p=at(b.d);b.x=p[0];b.y=p[1];
+  if(b.d>=L){b.dead=1;lives-=rank(b.t)}}
+ for(const tr of TR){if(tr.cd>0){tr.cd--;continue}
+  for(const b of B)if(!b.dead&&Math.hypot(b.x-tr.x,b.y-tr.y)<18&&hit(b,1,'sharp')){tr.n--;tr.cd=8;break}}
+ TR=TR.filter(t=>t.n>0);
+ for(const t of TW){
+  let rate=t.rate*G.rate,dmg=t.dmg?t.dmg+G.dmg:0;
+  if(t.k=='hero'){const l=heroLv();rate*=Math.pow(.96,l);dmg+=Math.floor(l/6);t.lv=l}
+  if(t.cd>0){t.cd--;continue}
+  const c=B.filter(b=>!b.dead&&(!b.camo||t.camo)&&Math.hypot(b.x-t.x,b.y-t.y)<=t.r&&!(t.kind=='sharp'&&b.lead));
+  if(!c.length)continue;c.sort((a,b)=>b.d-a.d);t.cd=rate;
+  if(t.kind=='frost'){c.forEach(b=>{b.slow=90;if(dmg)hit(b,dmg,'frost')});FX.push({ring:1,x:t.x,y:t.y,r:t.r,l:12,col:'#9be'})}
+  else if(t.kind=='boom'){const g=c[0];B.filter(b=>Math.hypot(b.x-g.x,b.y-g.y)<=t.splash).forEach(b=>hit(b,dmg,'boom'));FX.push({ring:1,x:g.x,y:g.y,r:t.splash,l:10,col:'#fa3'})}
+  else for(let i=0;i<t.shots&&i<c.length;i++){hit(c[i],dmg,'sharp');FX.push({x1:t.x,y1:t.y,x2:c[i].x,y2:c[i].y,l:5,k:t.k})}}
+ B=B.filter(b=>!b.dead);FX.forEach(f=>f.l--);FX=FX.filter(f=>f.l>0);
+ if(lives<=0){lives=0;over=true;S.runs++;S.best=Math.max(S.best,round);S.run=null;save();
+  modal('<h2>Die Bloons sind durch!</h2><p>Du hast Runde '+round+' erreicht. Siege: '+S.wins+'</p><button class="pri" onclick="toMenu()">Zum Menü</button>')}
+ else if(running&&!q.length&&!B.length){running=false;money+=Math.round((90+3*round)*G.bonus);round++;
+  if(round>WIN&&!won){won=true;S.wins++;S.best=WIN;S.run=null;save();
+   const nw=Object.keys(D).filter(k=>D[k].u==S.wins&&S.wins>0).map(k=>D[k].n).concat(M.filter(m=>m.need==S.wins&&S.wins>0).map(m=>'Karte '+m.n));
+   modal('<h2>Sieg! 🎉</h2><p>Alle '+WIN+' Runden geschafft. Siege gesamt: '+S.wins+'.'+(nw.length?'<br><b>Neu freigeschaltet:</b> '+nw.join(', '):'')+'</p><div class="cards"><button class="pri" onclick="hideModal()">Freeplay</button><button onclick="toMenu()">Zum Menü</button></div>')}
+  else{if(!won)saveRun();if(round%10==1)openPerk()}}}
+function saveRun(){S.run={map:mi,money,lives,round,G,TW:TW.map(t=>({k:t.k,x:t.x,y:t.y,lv:t.lv,spent:t.spent})),TR:TR.map(t=>({x:t.x,y:t.y,n:t.n}))};save()}
+// ---- Roguelike-Perks
+const PK=[['Bananenfarm','+500 Geld sofort',()=>money+=500],['Dicke Haut','+40 Leben',()=>lives+=40],['Rabatt-Marke','Affen und Fallen 15% billiger',()=>G.disc*=.85],['Scharfe Krallen','Alle Affen +1 Schaden',()=>G.dmg++],['Schnellfeuer','Alle Affen feuern 10% schneller',()=>G.rate*=.9],['Goldene Runden','Rundenbonus +60%',()=>G.bonus+=.6],['Heldenglück','Held startet 6 Stufen höher',()=>G.hlv+=6]];
+function modal(h){paused=true;$('mb').innerHTML=h;$('md').style.display='flex'}
+function hideModal(){paused=false;$('md').style.display='none'}
+function openPerk(){const c=PK.slice().sort(()=>Math.random()-.5).slice(0,3);
+ modal('<h2>Wähle einen Perk</h2><div class="cards">'+c.map((p,i)=>'<button data-i="'+i+'"><b>'+p[0]+'</b><small>'+p[1]+'</small></button>').join('')+'</div>');
+ $('mb').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{c[b.dataset.i][2]();hideModal();if(!over&&!won)saveRun()})}
+// ---- Menü & Fluss
+function renderMenu(){
+ $('st').textContent='Siege '+S.wins+' · Beste Runde '+S.best+' · Spiele '+S.runs;
+ const c=$('cont');c.style.display=S.run?'block':'none';if(S.run)c.textContent='Weiterspielen: '+M[S.run.map].n+', Runde '+S.run.round;
+ $('maps').innerHTML='';M.forEach((m,i)=>{const b=document.createElement('button'),lk=locked(m.need);b.disabled=lk;
+  b.innerHTML='<b>'+m.n+'</b><small>'+(lk?'🔒 '+m.need+' Sieg(e) nötig':'Neues Spiel starten')+'</small>';b.onclick=()=>startNew(i);$('maps').appendChild(b)});
+ $('tl').innerHTML=Object.keys(D).filter(k=>k!='trap').map(k=>'<span class="'+(locked(D[k].u)?'lk':'')+'">'+(D[k].i||'🦧')+' '+D[k].n+(locked(D[k].u)?' 🔒 '+D[k].u:'')+'</span>').join('')}
+function toMenu(){if(inGame&&!over&&!won&&TW.length)saveRun();inGame=false;hideModal();renderMenu();show('menu')}
+function startNew(i){reset();setMap(i);inGame=true;show('game');openPerk()}
+function cont(){const r=S.run;reset();setMap(r.map);money=r.money;lives=r.lives;round=r.round;G=r.G;TW=r.TW.map(t=>mk(t.k,t.x,t.y,t.lv,t.spent));TR=r.TR.map(t=>({x:t.x,y:t.y,n:t.n,cd:0}));inGame=true;show('game')}
+let adm=false;
+function openAdmin(){
+ if(!adm){modal('<h2>Admin-Menü</h2><input id="an" placeholder="Benutzername" autocomplete="username"><input id="ap" type="password" placeholder="Passwort" autocomplete="current-password"><div id="am" style="color:#c0392b;min-height:18px"></div><div class="cards"><button class="pri" id="ay">Öffnen</button><button onclick="hideModal()">Abbrechen</button></div>');
+  const go=()=>{if($('an').value.trim()==USER&&$('ap').value==PASS){adm=true;openAdmin()}else $('am').textContent='Daten falsch.'};$('ay').onclick=go;$('ap').onkeydown=e=>e.key=='Enter'&&go();return}
+ const o=[['money','Unendlich Geld'],['lives','Unendlich Leben'],['ab','Pfeilsturm ohne Pause'],['unlock','Alles freigeschaltet']];
+ modal('<h2>Admin-Menü</h2><div class="cards">'+o.map(a=>'<button data-a="'+a[0]+'" class="'+(S.a[a[0]]?'on':'')+'">'+a[1]+': '+(S.a[a[0]]?'an':'aus')+'</button>').join('')+'<button data-a="auto" class="'+(S.auto?'on':'')+'">Runden automatisch starten: '+(S.auto?'an':'aus')+'</button></div><div class="cards"><button id="ar">Spielstand löschen</button><button class="pri" onclick="hideModal()">Schließen</button></div>');
+ $('mb').querySelectorAll('[data-a]').forEach(b=>b.onclick=()=>{const k=b.dataset.a;if(k=='auto')S.auto=S.auto?0:1;else S.a[k]=S.a[k]?0:1;save();renderMenu();openAdmin()});
+ $('ar').onclick=()=>{S.wins=S.runs=S.best=0;S.run=null;save();renderMenu();openAdmin()}}
+$('lo').onclick=openAdmin;$('cont').onclick=cont;$('mn').onclick=toMenu;
+// ---- Grafik
+const bg=()=>M[mi];
+function draw(){
+ const m=bg();x.fillStyle=m.bg;x.fillRect(0,0,800,500);
+ x.lineJoin=x.lineCap='round';x.beginPath();P.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));
+ x.strokeStyle=m.pb;x.lineWidth=46;x.stroke();x.strokeStyle=m.pa;x.lineWidth=38;x.stroke();
+ ROCKS.forEach(r=>{x.fillStyle='#8c9094';x.beginPath();x.arc(r[0],r[1],r[2],0,7);x.fill();x.fillStyle='#a9adb1';x.beginPath();x.arc(r[0]-6,r[1]-7,r[2]*.5,0,7);x.fill()});
+ x.font='18px serif';x.textAlign='center';x.textBaseline='middle';TR.forEach(t=>x.fillText('📌',t.x,t.y));
+ const rg=sel?{x:sel.x,y:sel.y,r:sel.r}:(pl&&pl!='trap'?{x:mx,y:my,r:D[pl].r}:null);
+ if(rg){x.fillStyle='rgba(255,255,255,.22)';x.beginPath();x.arc(rg.x,rg.y,Math.min(rg.r,700),0,7);x.fill()}
+ TW.forEach(t=>{monkey(t.k,t.x,t.y);if(t===sel){x.strokeStyle='#fff';x.lineWidth=2;x.beginPath();x.arc(t.x,t.y,22,0,7);x.stroke()}
+  if(t.k!='hero')for(let i=0;i<t.lv;i++){x.fillStyle='#ffd23f';x.fillRect(t.x-12+i*9,t.y+21,7,5)}});
+ for(const b of B){x.save();x.translate(b.x,b.y);if(b.t=='moab')blimp(b);else balloon(T[b.t].c,b.camo,b.lead);
+  if(b.slow>0){x.strokeStyle='#bdf';x.lineWidth=2;x.beginPath();x.arc(0,0,b.t=='moab'?36:14,0,7);x.stroke()}x.restore()}
+ FX.forEach(f=>{if(f.ring){x.strokeStyle=f.col;x.lineWidth=3;x.beginPath();x.arc(f.x,f.y,f.r*(1-f.l/14),0,7);x.stroke()}
+  else{x.strokeStyle=f.k=='heli'?'#f55':f.k=='sup'?'#6ff':'#fff';x.lineWidth=f.k=='sup'?3:2;x.beginPath();x.moveTo(f.x1,f.y1);x.lineTo(f.x2,f.y2);x.stroke()}});
+ if(pl){x.globalAlpha=.85;if(pl=='trap'||!canPlace(mx,my,pl)){x.font='24px serif';x.fillText(canPlace(mx,my,pl)?'📌':'🚫',mx,my)}else monkey(pl,mx,my);x.globalAlpha=1}
+ x.font='600 20px Fredoka,system-ui,sans-serif';x.textAlign='left';x.textBaseline='top';
+ const h='❤️ '+lives+'   💰 '+money+'   Runde '+round+(won?'':' / '+WIN);
+ x.fillStyle='rgba(0,0,0,.5)';x.fillRect(8,8,x.measureText(h).width+16,30);x.fillStyle='#fff';x.fillText(h,16,12)}
+// ---- Platzieren & Auswählen
+function canPlace(px,py,k){
+ if(px<0||py<0||px>800||py>500)return false;
+ if(k=='trap')return pd(px,py)<20;
+ if(pd(px,py)<28)return false;
+ if(ROCKS.some(r=>Math.hypot(px-r[0],py-r[1])<r[2]+16))return false;
+ return !TW.some(t=>Math.hypot(px-t.x,py-t.y)<36)}
+function pos(e){const r=cv.getBoundingClientRect(),s=Math.min(r.width/800,r.height/500);return[(e.clientX-r.left-(r.width-800*s)/2)/s,(e.clientY-r.top-(r.height-500*s)/2)/s]}
+cv.addEventListener('pointermove',e=>{[mx,my]=pos(e)});
+cv.addEventListener('contextmenu',e=>{e.preventDefault();pl=null});
+cv.addEventListener('click',e=>{[mx,my]=pos(e);if(paused||over)return;
+ if(pl){if(money>=costOf(pl)&&canPlace(mx,my,pl)){money-=costOf(pl);
+   if(pl=='trap')TR.push({x:mx,y:my,n:14,cd:0});else{const t=mk(pl,mx,my,0,costOf(pl));TW.push(t);sel=t}
+   if(!e.shiftKey)pl=null}return}
+ sel=TW.find(t=>Math.hypot(mx-t.x,my-t.y)<22)||null});
+addEventListener('keydown',e=>{if(e.key=='Escape'){pl=null;sel=null}});
+// ---- Oberfläche
+const shop=$('shop');
+Object.keys(D).forEach(k=>{const b=document.createElement('button');b.dataset.k=k;b.title=D[k].n;
+ b.innerHTML='<i>'+D[k].i+'</i><b></b>';
+ b.onclick=()=>{pl=pl==k?null:k;sel=null};shop.appendChild(b)});
+$('go').onclick=startRound;
+$('au').onclick=()=>{S.auto=S.auto?0:1;save()};
+$('sp').onclick=()=>{spd=spd%4+1;$('sp').textContent='×'+spd};
+$('ab').onclick=()=>{if(abCd>0||paused||!TW.some(t=>t.k=='hero'))return;abCd=2400;B.slice().forEach(b=>hit(b,2,'sharp'));FX.push({ring:1,x:400,y:250,r:420,l:14,col:'#ffd23f'})};
+let pk='';
+function ui(){const au=$('au');au.classList.toggle('on',!!S.auto);au.textContent=S.auto?'Auto an':'Auto aus';
+ const go=$('go');go.disabled=running||over||paused;go.textContent=running?'Runde läuft …':'Runde '+round+' starten';
+ const hasH=TW.some(t=>t.k=='hero');
+ shop.querySelectorAll('button').forEach(b=>{const k=b.dataset.k,lk=locked(D[k].u);
+  b.disabled=lk||money<costOf(k)||(k=='hero'&&hasH);b.classList.toggle('on',pl==k);b.querySelector('b').textContent=lk?'🔒'+D[k].u:'$'+costOf(k)});
+ const ab=$('ab');ab.disabled=!hasH||abCd>0;ab.textContent=!hasH?'Pfeilsturm':abCd>0?'Lädt '+Math.ceil(abCd/60)+'s':'Pfeilsturm!';
+ const sk=pl||(sel&&sel.k);$('tip').textContent=sk?D[sk].n+': '+D[sk].d:'Wähle einen Affen und tippe aufs Feld.';
+ const t=sel,nx=t&&D[t.k].up[t.lv],key=t?[TW.indexOf(t),t.lv,nx&&money>=nx[1],t.k=='hero'&&heroLv()].join():'-';
+ if(key!=pk){pk=key;const p=$('pan');
+  if(!t){p.innerHTML='<h3>Upgrades</h3><span style="opacity:.8">Tippe einen Affen auf dem Feld an.</span>';return}
+  p.innerHTML='<h3>'+D[t.k].n+(t.k=='hero'?' · Stufe '+heroLv()+'/20':'')+'</h3>';
+  if(nx){const b=document.createElement('button');b.disabled=money<nx[1];b.innerHTML='<span>'+nx[0]+'</span><b>$'+nx[1]+'</b>';
+   b.onclick=()=>{if(money>=nx[1]){money-=nx[1];t.spent+=nx[1];nx[2](t);t.lv++;pk=''}};p.appendChild(b)}
+  else if(t.k!='hero')p.insertAdjacentHTML('beforeend','<span style="opacity:.8">Voll ausgebaut.</span>');
+  const s=document.createElement('button');s.innerHTML='<span>Verkaufen</span><b>$'+Math.floor(t.spent*.7)+'</b>';
+  s.onclick=()=>{money+=Math.floor(t.spent*.7);TW=TW.filter(o=>o!==t);sel=null;pk=''};p.appendChild(s)}}
+load();renderMenu();show('menu');
+(function loop(){if(inGame){if(!over&&!paused)for(let i=0;i<spd;i++)tick();draw();ui()}requestAnimationFrame(loop)})();
+</script>
+</body></html>
